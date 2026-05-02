@@ -1,0 +1,8 @@
+# Local backup of former nested repo (do not commit)
+.git-nested-backup/
+
+.vscode
+nodemon.json
+node_modules
+/node_modules
+uploads/images/*
