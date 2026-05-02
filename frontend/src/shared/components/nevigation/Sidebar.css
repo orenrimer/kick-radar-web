@@ -1,0 +1,134 @@
+.sidebar-top {
+    width: 100%;
+    padding: 0;
+}
+
+.sidebar-bottom {
+    width: 100%;
+    padding: 1rem;
+}
+
+.sidebar-events {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+}
+
+.sidebar-logo-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+
+.sidebar-logo-large img {
+    width: 100px;
+}
+
+
+.sidebar-events-catgory {
+    width: 100%;
+    height: 64px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 14px 0px 14px 18px;
+    border-radius: 12px 0 0 12px;
+    color: #F6F5F5;
+}
+
+.sidebar-events-catgory i {
+    margin-right: 1rem;
+    font-size: 18px;
+}
+
+.sidebar-events-catgory:hover {
+    color: #E2E2E2;
+    cursor: pointer;
+}
+
+
+.sidebar-events-catgory.active {
+    background-color: #F6F5F5;
+    color: #EF233C;
+    /* color: #f8aba8; */
+    border: none;
+    font-weight: bold;
+}
+
+
+.side-drawer {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    height: 100vh;
+    width: 70%;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+}
+
+
+
+.sidebar-menu {
+    padding: 1rem 0 1rem 1rem;
+}
+
+.wrapper {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid black;
+}
+
+#slide {
+    position: absolute;
+    left: -100px;
+    width: 100px;
+    height: 100px;
+    background: blue;
+    transition: 1s;
+}
+
+.wrapper:hover #slide {
+    transition: 1s;
+    left: 0;
+}
+
+
+
+
+@media (max-width: 1024px) {
+    .sidebar-logo-large img {
+        width: 80px;
+    }
+
+    .sidebar-logo-small img {
+        display: block;
+        width: 40px;
+    }
+
+    .sidebar-events-catgory {
+        justify-content: center;
+        padding: 14px 0;
+    }
+
+    .sidebar-events-catgory span {
+        display: none;
+    }
+
+    .sidebar-events-catgory i {
+        margin: 0;
+    }
+
+    .sidebar-bottom {
+        padding: 1rem;
+    }
+
+    .sidebar-menu {
+        padding: 1rem 0;
+    }
+}

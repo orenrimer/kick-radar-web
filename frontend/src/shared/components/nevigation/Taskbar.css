@@ -1,0 +1,33 @@
+.taskbar-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+
+}
+
+
+.taskbar-events-catgory {
+    /* height: 86px; */
+    padding: 14px 18px;
+    border-radius: 8px;
+}
+
+
+.taskbar-events-catgory i {
+    font-size: 24px;
+}
+
+
+.taskbar-events-catgory:hover {
+    color: #EF233C;
+    cursor: pointer;
+}
+
+
+.taskbar-events-catgory.active {
+    background-color: #F2F2F2;
+    color: #f8aba8;
+    border: none;
+    font-weight: bold;
+}

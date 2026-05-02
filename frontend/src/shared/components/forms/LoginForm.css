@@ -1,0 +1,258 @@
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding: 0 2rem 0 2rem;
+    width: 100%;
+    min-height: 34rem;
+}
+
+.auth-form-top h2 {
+    font-size: 27px;
+    margin-bottom: 2.8rem;
+}
+
+
+.form-field-outer {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 1.2rem;
+}
+
+.form-field-inner {
+    position: relative;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.form-field-inner__icon {
+    position: absolute;
+    padding: 10px;
+    height: 100%;
+    width: 2.2rem;
+    color: white;
+    left: 0;
+    background-color: #FA7470;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px 0 0 8px;
+
+}
+
+.form-field-outer label {
+    text-align: left;
+    /* margin-bottom: 0.5rem;
+    font-weight: bold; */
+
+    color: #000000;
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 600;
+    width: 100%;
+    margin: 0 0 6px;
+}
+
+.form-field-inner input {
+    width: 100%;
+    font: inherit;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+    padding: 0.5rem 0.5rem;
+    text-align: left;
+    /* text-indent: 2.5rem; */
+    /* border-radius: 8px 0 0 8px; */
+}
+
+/* .input-error input {
+    border-color: #ef5350;
+    box-shadow: 0 1px 1px rgba(218, 49, 7, 0.075) inset, 0 0 8px rgba(162, 41, 33, 0.6);
+    outline: 0 none;
+} */
+
+
+.form-field-inner input:focus {
+    outline: none;
+}
+
+.form-field-outer p {
+    font-size: 14px;
+    text-align: left;
+    color: #ef5350;
+    margin: 0;
+
+}
+
+.form-footer {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-footer__btn a {
+    cursor: pointer;
+    text-decoration: none;
+    /* color: #0DC15C; */
+
+    font-weight: 600;
+}
+
+
+.form-footer button {
+    width: 100%;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    padding: 11px 0;
+}
+
+.error-msg p {
+    font-weight: bold;
+    color: #F64544;
+}
+
+
+
+
+
+
+
+.signin-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f6f9fc;
+    font-family: 'Segoe UI', sans-serif;
+
+}
+
+.signin-box {
+    background: white;
+    padding: 40px 32px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    text-align: left;
+    min-height: 34rem;
+
+}
+
+
+.signin-box h2 {
+    margin: 0 0 10px;
+}
+
+.signin-box p {
+    margin-top: 0px;
+    margin-bottom: 25px;
+    color: #555;
+}
+
+.signin-form label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+    color: #222;
+}
+
+.signin-form input {
+    width: 100%;
+    padding: 12px 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 40px;
+}
+
+.password-input span {
+    position: absolute;
+    right: 12px;
+    top: 21px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.signin-btn {
+    width: 100%;
+    background-color: #EF233C;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    height: 43px;
+}
+
+.signin-btn:hover {
+    background-color: #FA7470;
+}
+
+.links {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.links a {
+    font-size: 16px;
+    color: #0D1B2A;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.error-msg {
+    /* margin-top: 2rem;
+    padding: 0.5rem;
+    border: 0.1rem solid red;
+    border-radius: 8px;
+    background-color: rgba(255, 0, 0, 0.5); */
+
+    color: #F64544;
+    font-size: 13px;
+    text-align: left;
+}
+
+
+
+
+.input-error-msg {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.input-error-msg p {
+    margin: 0;
+}
+
+.input-error-msg i {
+    margin-right: 0.3rem;
+    color: #F64544;
+}

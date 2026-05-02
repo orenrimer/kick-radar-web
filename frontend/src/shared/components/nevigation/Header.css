@@ -1,0 +1,117 @@
+.main-header {
+    width: 100%;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* background: #FA7470; */
+    background: #ffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.26);
+    padding: 0 1.5rem;
+    z-index: 5;
+}
+
+
+
+/* .main-navigation__menu-btn {
+    width: 3rem;
+    height: 3rem;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-right: 2rem;
+    cursor: pointer;
+} */
+
+.main-navigation__drawer-btn-close {
+    background: transparent;
+    border: none;
+    position: absolute;
+    right: 3rem;
+    top: 3rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+
+/* .main-navigation__drawer-btn-close:before,
+.main-navigation__drawer-btn-close:after {
+    position: absolute;
+    left: 15px;
+    content: ' ';
+    height: 33px;
+    width: 2px;
+    background-color: #333;
+}
+
+.main-navigation__drawer-btn-close:before {
+    transform: rotate(45deg);
+}
+
+.main-navigation__drawer-btn-close:after {
+    transform: rotate(-45deg);
+} */
+
+
+/* .main-navigation__menu-btn span {
+    display: block;
+    width: 3rem;
+    height: 2.5px;
+    background: white;
+} */
+
+
+.main-navigation__drawer-nav-header {
+    padding-right: 1rem;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: end;
+}
+
+.main-navigation__drawer-nav-menu {
+    margin-top: 5rem;
+    /* display: flex;
+    justify-content: start; */
+}
+
+.main-navigation__logo img {
+    width: 42px;
+    /* color: #ffff; */
+
+}
+
+.main-navigation__title a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #FA7470;
+}
+
+.main-navigation__header-nav {
+    display: none;
+}
+
+.main-navigation__drawer-nav {
+    height: 100%;
+}
+
+
+.main-header {
+    justify-content: space-between;
+}
+
+
+.main-navigation__menu-btn {
+    display: none;
+}
+
+.main-navigation__header-nav {
+    display: block;
+}
+
+
+@media (min-width: 768px) {}

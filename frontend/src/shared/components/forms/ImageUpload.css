@@ -1,0 +1,50 @@
+.form-control {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    /* margin-top: 3rem; */
+}
+
+.image-upload__preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding: 0 0.5rem 0 0.5rem;
+}
+
+
+.preview-image__image {
+    border: solid 1px #d3d3d3;
+    border-radius: 10px;
+    width: 5.5rem;
+    height: 5.5rem;
+    object-fit: cover;
+}
+
+.image-picker-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.image-picker-btn button {
+    padding: 1rem 1rem 0 0.5rem;
+}
+
+.upload-error-msg p {
+    font-size: 14px;
+    text-align: left;
+    color: #ef5350;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .image-upload__preview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

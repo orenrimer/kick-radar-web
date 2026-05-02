@@ -1,0 +1,89 @@
+.carouselContainer {
+    height: 25rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.carouselArea {
+    width: 80%;
+    height: 100%;
+    white-space: nowrap;
+    /* position: relative; */
+    overflow: hidden;
+    box-sizing: border-box;
+
+}
+
+.carouselPosts {
+    position: relative;
+    transition: 0.5s;
+    display: flex;
+    justify-content: flex-start;
+    height: 100%;
+}
+
+
+.carouselPostBox {
+    height: 100%;
+    width: 19.5rem;
+    /* height: 15rem; */
+    margin: 0px 2.5rem;
+    transition: 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+
+.controlLeft,
+.controlRight {
+    width: 40px;
+    height: 40px;
+    transition: 0.5s 0;
+    border: solid 1px white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #292929;
+    font-size: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+
+.controlLeft:hover,
+.controlRight:hover {
+    color: #1c1c1c;
+    background-color: rgba(255, 255, 255, .8);
+}
+
+.controlLeft {
+    left: 1rem;
+}
+
+.controlRight {
+    right: 1rem;
+}
+
+
+
+.addCarouselItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 1024px) {
+    .carouselPostBox {
+        margin: 0px 1rem;
+    }
+
+}
