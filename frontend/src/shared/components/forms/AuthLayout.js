@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { env } from '../../../config/env';
-import Card from '../UIComponents/Card';
+import Card from '../UIComponents/Card/Card';
 import GoogleSignInButton from './GoogleSignInButton';
 
 import './AuthLayout.css';
@@ -33,7 +33,7 @@ const AuthLayout = ({
       <div className="signin-container">
         <div className="signin-box">
           <h2>{title}</h2>
-          <p>{subtitle}</p>
+          {subtitle && <p>{subtitle}</p>}
 
           <GoogleSignInButton
             onSuccess={() => setGoogleError('')}

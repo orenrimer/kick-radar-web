@@ -4,7 +4,7 @@ import Home from './home/pages/Home';
 import AuthContext from './shared/components/contexts/AuthContext';
 import { NotificationProvider } from './shared/components/contexts/NotificationContext';
 import useAuth from './shared/components/hooks/auth-hook';
-import Loading from './shared/components/UIComponents/Loading';
+import Loading from './shared/components/UIComponents/Loading/Loading';
 
 const NewEvent = React.lazy(() => import('./places/pages/NewEvent'));
 const Login = React.lazy(() => import('./user/pages/Login'));

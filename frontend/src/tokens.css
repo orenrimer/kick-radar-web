@@ -1,0 +1,22 @@
+:root {
+    --color-brand: #7355FE;
+    --color-brand-hover: #6243EE;
+    --color-brand-rgb: 115, 85, 254;
+    --color-brand-soft: rgba(var(--color-brand-rgb), 0.15);
+    --color-marker-rgb: 74, 111, 212;
+
+    --color-bg-dark: #181831;
+    --color-bg-light: #F6F5F5;
+    --color-bg-muted: #E2E2E2;
+
+    --color-surface-card: #181226;
+    --color-surface-card-hover: #221B36;
+    --color-surface-overlay: rgba(16, 29, 45, 0.6);
+
+    --color-text-primary: #FFFFFF;
+    --color-text-muted: #A8A6B5;
+    --color-divider: rgba(255, 255, 255, 0.06);
+
+    --color-link: #3B82F6;
+    --color-error: #ef4444;
+}

@@ -1,4 +1,4 @@
-.place-form-container {
+﻿.place-form-container {
     width: 80%;
 }
 
@@ -115,7 +115,7 @@
     margin-bottom: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #FA7470;
+    color: var(--color-brand-hover);
 }
 
 .event-form-top__table-row-teams p {
@@ -194,8 +194,8 @@
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    color: #0D1B2A;
-    background: #EF233C;
+    color: var(--color-bg-dark);
+    background: var(--color-brand);
     padding: 0.5rem;
     border-radius: 50%;
 }
@@ -218,7 +218,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 20px;
-    background-color: #0D1B2A;
+    background-color: var(--color-bg-dark);
     border-radius: 14px;
     padding: 2rem 3rem;
     flex: 3;
@@ -238,17 +238,18 @@
 .title button {
     background: none;
     border: none;
-    color: #EF233C;
+    color: var(--color-brand);
     cursor: pointer;
     text-decoration: underline;
     font-weight: 600;
 }
 
-
-
+.title h2 {
+    color: var(--color-text-primary);
+}
 
 .live-data-title {
-    color: #f9f9f9;
+    color: var(--color-text-primary);
 }
 
 .match-filter {
@@ -380,18 +381,26 @@
 
 
 .match-card {
-    background: white;
+    background: var(--color-surface-card);
+    color: var(--color-text-primary);
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     height: 100px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-divider);
     flex: 13;
     gap: 5px;
     width: 100%;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.match-card:hover {
+    background: var(--color-surface-card-hover);
+    border-color: var(--color-brand);
+    transform: translateY(-1px);
 }
 
 .teams {
@@ -416,7 +425,7 @@
     justify-content: space-between;
     gap: 10px;
     font-size: 14px;
-    color: #555;
+    color: var(--color-text-muted);
     flex: 4;
 }
 
@@ -436,21 +445,24 @@
 
 .match-action button,
 .match-action-live button {
-    background: #EF233C;
+    background: var(--color-brand);
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 8px 14px;
     border-radius: 8px;
     font-size: 14px;
+    font-weight: 600;
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: background 0.2s ease;
 }
 
 
 .match-action button:hover,
 .match-action-live button:hover {
-    background: #FA7470;
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
 }
 
 
@@ -473,8 +485,8 @@
 .live-badge {
     display: inline-flex;
     align-items: center;
-    background-color: #f9f9f9;
-    color: #0D1B2A;
+    background-color: var(--color-brand-soft);
+    color: var(--color-brand);
     font-weight: bold;
     font-size: 14px;
     padding: 5px 10px;
@@ -510,14 +522,15 @@
 
 
 .match-card-live {
-    background: white;
+    background: var(--color-surface-card-hover);
+    color: var(--color-text-primary);
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-divider);
     gap: 20px;
     width: 100%;
 }
@@ -739,7 +752,7 @@
     }
 
     .match-action-mini button {
-        background: #EF233C;
+        background: var(--color-brand);
         color: #f9f9f9;
         border: none;
         padding: 8px 12px;
@@ -753,7 +766,7 @@
     .live-badge {
         display: inline-flex;
         align-items: center;
-        background-color: #0D1B2A;
+        background-color: var(--color-bg-dark);
         color: #f9f9f9;
         font-weight: bold;
         font-size: 14px;

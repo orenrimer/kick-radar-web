@@ -1,7 +1,7 @@
-.plus-button {
+﻿.plus-button {
     width: 64px;
     height: 64px;
-    background-color: #EF233C;
+    background: linear-gradient(135deg, #3D55C5 0%, #1D31A3 100%);
     text-decoration: none;
     border-radius: 50%;
     display: flex;
@@ -18,7 +18,7 @@
 }
 
 .plus-sign {
-    color: #0D1B2A;
+    color: var(--color-text-primary);
     font-size: 42px;
     font-weight: bold;
 }

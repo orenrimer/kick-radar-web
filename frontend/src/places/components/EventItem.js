@@ -1,13 +1,16 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 
-import { useHttpClient } from "../../shared/components/hooks/http-hook";
+import { deleteEvent } from '../../api/events';
+import { sendJoinRequest, cancelJoinRequest } from '../../api/requests';
+import { updateUser } from '../../api/users';
 import AuthContext from "../../shared/components/contexts/AuthContext";
-import CustomButton from "../../shared/components/UIComponents/CustomButton";
-import Card from "../../shared/components/UIComponents/Card";
-import Modal from "../../shared/components/UIComponents/Modal";
+import CustomButton from "../../shared/components/UIComponents/CustomButton/CustomButton";
+import Card from "../../shared/components/UIComponents/Card/Card";
+import Modal from "../../shared/components/UIComponents/Modal/Modal";
 import LoginForm from "../../shared/components/forms/LoginForm";
-import Loading from "../../shared/components/UIComponents/Loading";
+import Loading from "../../shared/components/UIComponents/Loading/Loading";
 import { FaArrowRight, FaRegBookmark } from "react-icons/fa";
 import { IoTicket } from "react-icons/io5";
 
@@ -21,76 +24,51 @@ const EventItem = (props) => {
 
     const [showLogin, setShowLogin] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const [numOfParticipants, setnumOfParticipants] = useState(props.numOfParticipants);
-    const [isParticipating, setIsParticipating] = useState(props.isParticipated);
-    const [isRequested, setIsRequested] = useState(props.isRequested);
 
-    const { sendRequest } = useHttpClient();
+    const deleteMutation = useMutation({
+        mutationFn: () => deleteEvent(props.id, auth.token),
+        onSuccess: () => props.onDelete(props.id),
+    });
 
-    const handleDeleteEvent = async () => {
+    const joinRequestMutation = useMutation({
+        mutationFn: () =>
+            sendJoinRequest(
+                {
+                    eventId: props.id,
+                    requesterId: auth.userId,
+                    hostId: props.host,
+                },
+                auth.token
+            ),
+        onSuccess: () => props.onJoinRequest(props.self),
+    });
+
+    const cancelParticipationMutation = useMutation({
+        mutationFn: () =>
+            updateUser(auth.userId, { eventId: props.id }, auth.token),
+        onSuccess: () => props.onCancelParticipation(props.id),
+    });
+
+    const cancelRequestMutation = useMutation({
+        mutationFn: () => cancelJoinRequest(props.id, auth.userId, auth.token),
+        onSuccess: () => props.onCancelRequest(props.id),
+    });
+
+    const handleDeleteEvent = () => {
         setShowConfirm(false);
-        try {
-            await sendRequest(
-                `/events/${props.id}`,
-                'DELETE',
-                null,
-                { Authorization: `Bearer ${auth.token}` }
-            );
-            props.onDelete(props.id);
-        } catch (err) { }
+        deleteMutation.mutate();
     };
 
-
-    const handleJoinRequest = async () => {
+    const handleJoinRequest = () => {
         if (!auth.isLoggedIn) {
             navigate('/auth/login');
             return;
         }
-
-        try {
-            await sendRequest(
-                '/requests/send',
-                'POST',
-                {
-                    eventId: props.id,
-                    requesterId: auth.userId,
-                    hostId: props.host
-                },
-                { Authorization: `Bearer ${auth.token}` }
-            );
-            setIsRequested(true);
-            props.onJoinRequest(props.self);
-        } catch (err) { }
+        joinRequestMutation.mutate();
     };
 
-
-    const handleCancelParticipation = async () => {
-        try {
-            await sendRequest(
-                `/users/${auth.userId}`,
-                'PATCH',
-                { eventId: props.id },
-                { Authorization: `Bearer ${auth.token}` }
-            );
-            setIsParticipating(false);
-            setnumOfParticipants(prev => prev - 1);
-            props.onCancelParticipation(props.id);
-        } catch (err) { }
-    }
-
-
-    const handleCancelRequest = async () => {
-        try {
-            await sendRequest(
-                `/requests/${props.id}/${auth.userId}`,
-                'DELETE',
-                null,
-                { Authorization: `Bearer ${auth.token}` }
-            )
-            setIsRequested(false);
-            props.onCancelRequest(props.id);
-        } catch (err) { }
-    }
+    const handleCancelParticipation = () => cancelParticipationMutation.mutate();
+    const handleCancelRequest = () => cancelRequestMutation.mutate();
 
     // const handeLikePlace = async () => {
     //     if (isLoading) return;
@@ -182,10 +160,10 @@ const EventItem = (props) => {
                     <div className="event-details">
                         <p><i className="fa-solid fa-location-dot"></i> {props.address}</p>
                         <p><i className="fa-regular fa-calendar-days"></i>{props.startTime}</p>
-                        <p><IoTicket style={{ fontSize: "18px", marginRight: "0.5rem" }} />{numOfParticipants}</p>
+                        <p><IoTicket style={{ fontSize: "18px", marginRight: "0.5rem" }} />{props.numOfParticipants}</p>
                     </div>
                     <div className="event-actions">
-                        {auth.userId !== props.host && !isParticipating && !isRequested &&
+                        {auth.userId !== props.host && !props.isParticipated && !props.isRequested &&
                             <div className="event-item__action">
                                 {auth.isLoggedIn ? <button onClick={handleJoinRequest}>
                                     Request to Join <FaArrowRight />
@@ -194,14 +172,14 @@ const EventItem = (props) => {
 
                             </div >
                         }
-                        {auth.userId !== props.host && isParticipating && <div className="event-item__action">
+                        {auth.userId !== props.host && props.isParticipated && <div className="event-item__action">
                             <button onClick={handleCancelParticipation}>
                                 Leave event
                             </button>
                         </div >
                         }
 
-                        {auth.userId !== props.host && isRequested && !isParticipating && <div className="event-item__action">
+                        {auth.userId !== props.host && props.isRequested && !props.isParticipated && <div className="event-item__action">
                             <button onClick={handleCancelRequest}>
                                 Cancel request
                             </button>

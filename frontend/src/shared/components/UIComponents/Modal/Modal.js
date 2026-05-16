@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-import Card from './Card';
-import CustomButton from './CustomButton';
-import Backdrop from './Backdrop';
+import Card from '../Card/Card';
+import CustomButton from '../CustomButton/CustomButton';
+import Backdrop from '../Backdrop/Backdrop';
 import './Modal.css';
 
 

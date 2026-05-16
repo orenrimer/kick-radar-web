@@ -1,4 +1,4 @@
-.sidebar-top {
+﻿.sidebar-top {
     width: 100%;
     padding: 0;
 }
@@ -37,8 +37,8 @@
     align-items: center;
     justify-content: start;
     padding: 14px 0px 14px 18px;
-    border-radius: 12px 0 0 12px;
-    color: #F6F5F5;
+    border-radius: 12px;
+    color: var(--color-text-primary);
 }
 
 .sidebar-events-catgory i {
@@ -47,17 +47,17 @@
 }
 
 .sidebar-events-catgory:hover {
-    color: #E2E2E2;
+    background-color: rgba(255, 255, 255, 0.05);
     cursor: pointer;
 }
 
 
 .sidebar-events-catgory.active {
-    background-color: #F6F5F5;
-    color: #EF233C;
-    /* color: #f8aba8; */
+    background: linear-gradient(135deg, #3D55C5 0%, #1D31A3 100%);
+    color: var(--color-text-primary);
     border: none;
     font-weight: bold;
+    box-shadow: 0 0 24px rgba(29, 49, 163, 0.5);
 }
 
 
@@ -75,7 +75,7 @@
 
 
 .sidebar-menu {
-    padding: 1rem 0 1rem 1rem;
+    padding: 1rem;
 }
 
 .wrapper {

@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useNavigate } from 'react-router-dom';
 
-import { useHttpClient } from "../hooks/http-hook";
-import Notifications from "../UIComponents/Notifications";
+import Notifications from "../UIComponents/Notifications/Notifications";
 import { NotificationContext } from "../contexts/NotificationContext";
 import AuthContext from "../contexts/AuthContext";
 
 import "./NavLinks.css"
-import CustomButton from "../UIComponents/CustomButton";
+import CustomButton from "../UIComponents/CustomButton/CustomButton";
 
 
 const NavLinks = (props) => {

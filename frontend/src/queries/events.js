@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchAllEvents, fetchUserEvents } from '../api/events';
 
-// Cache keys. `all(near)` is parameterised by the geo filter so that
-// different positions/radii get their own cache entries (TanStack Query
-// uses structural equality on keys, so equivalent objects match).
+import { fetchAllEvents, fetchUserEvents, fetchEventById } from '../api/events';
+
 export const eventKeys = {
   all: (near) => ['events', near ?? null],
   user: (userId) => ['events', 'user', userId],
+  byId: (eventId) => ['events', eventId],
 };
 
 export function useAllEvents(token, near) {
@@ -23,5 +22,13 @@ export function useUserEvents(userId, token) {
     queryKey: eventKeys.user(userId),
     queryFn: ({ signal }) => fetchUserEvents(userId, token, signal),
     enabled: Boolean(userId),
+  });
+}
+
+export function useEvent(eventId, token) {
+  return useQuery({
+    queryKey: eventKeys.byId(eventId),
+    queryFn: ({ signal }) => fetchEventById(eventId, token, signal),
+    enabled: Boolean(eventId),
   });
 }

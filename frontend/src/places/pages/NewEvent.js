@@ -1,165 +1,25 @@
-import React, { useState, useEffect, useReducer, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useReducer, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useHttpClient } from '../../shared/components/hooks/http-hook';
+import { useMutation } from '@tanstack/react-query';
 import { FaLongArrowAltLeft } from "react-icons/fa";
 
-import Loading from '../../shared/components/UIComponents/Loading';
-import Modal from '../../shared/components/UIComponents/Modal';
+import { createEvent } from '../../api/events';
+
+import Loading from '../../shared/components/UIComponents/Loading/Loading';
+import Modal from '../../shared/components/UIComponents/Modal/Modal';
+import MatchList from '../components/MatchList';
 import useMediaQuery from '../../shared/components/hooks/use-media-hook';
 import { useDebounce } from '../../shared/components/hooks/useDebounce';
 import { useUserLocation } from '../../shared/components/hooks/useUserLocation';
+import { useFixtures } from '../../queries/fixtures';
 import AuthContext from '../../shared/components/contexts/AuthContext';
 import { PiLineVerticalBold } from "react-icons/pi";
 
 import './NewEvent.css';
 
 
-const events = [
-    {
-        "fixture": {
-            "id": 1298738,
-            "referee": null,
-            "timezone": "UTC",
-            "date": "2024-11-28T00:30:00+00:00",
-            "timestamp": 1732753800,
-            "periods": {
-                "first": null,
-                "second": null
-            },
-            "venue": {
-                "id": null,
-                "name": "Stade Jacques Pontrémy",
-                "city": "Le-Moule"
-            },
-            "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
-                "extra": null
-            }
-        },
-        "league": {
-            "id": 377,
-            "name": "Division d'Honneur",
-            "country": "Guadeloupe",
-            "logo": "https://media.api-sports.io/football/leagues/377.png",
-            "flag": "https://media.api-sports.io/flags/gp.svg",
-            "season": 2024,
-            "round": "Regular Season - 4"
-        },
-        "teams": {
-            "home": {
-                "id": 15551,
-                "name": "CERFA",
-                "logo": "https://media.api-sports.io/football/teams/15551.png",
-                "winner": null
-            },
-            "away": {
-                "id": 3203,
-                "name": "Moulien",
-                "logo": "https://media.api-sports.io/football/teams/3203.png",
-                "winner": null
-            }
-        },
-        "goals": {
-            "home": null,
-            "away": null
-        },
-        "score": {
-            "halftime": {
-                "home": null,
-                "away": null
-            },
-            "fulltime": {
-                "home": null,
-                "away": null
-            },
-            "extratime": {
-                "home": null,
-                "away": null
-            },
-            "penalty": {
-                "home": null,
-                "away": null
-            }
-        }
-    },
-    {
-        "fixture": {
-            "id": 1298738,
-            "referee": null,
-            "timezone": "UTC",
-            "date": "2024-11-28T00:30:00+00:00",
-            "timestamp": 1732753800,
-            "periods": {
-                "first": null,
-                "second": null
-            },
-            "venue": {
-                "id": null,
-                "name": "Stade Jacques Pontrémy",
-                "city": "Le-Moule"
-            },
-            "status": {
-                "long": "Not Started",
-                "short": "NS",
-                "elapsed": null,
-                "extra": null
-            }
-        },
-        "league": {
-            "id": 377,
-            "name": "Division d'Honneur",
-            "country": "Guadeloupe",
-            "logo": "https://media.api-sports.io/football/leagues/377.png",
-            "flag": "https://media.api-sports.io/flags/gp.svg",
-            "season": 2024,
-            "round": "Regular Season - 4"
-        },
-        "teams": {
-            "home": {
-                "id": 15551,
-                "name": "REAL MADRID",
-                "logo": "https://media.api-sports.io/football/teams/15551.png",
-                "winner": null
-            },
-            "away": {
-                "id": 3203,
-                "name": "Barcelona",
-                "logo": "https://media.api-sports.io/football/teams/3203.png",
-                "winner": null
-            }
-        },
-        "goals": {
-            "home": null,
-            "away": null
-        },
-        "score": {
-            "halftime": {
-                "home": null,
-                "away": null
-            },
-            "fulltime": {
-                "home": null,
-                "away": null
-            },
-            "extratime": {
-                "home": null,
-                "away": null
-            },
-            "penalty": {
-                "home": null,
-                "away": null
-            }
-        }
-    }
-]
-
-
-
 const NewEvent = () => {
-    const [eventList, setEventList] = useState([]);
-    const [currEvents, setCurrEvents] = useState([]);
+    const currDate = new Date().toJSON().slice(0, 10);
 
     const [pickedEvent, setPickedEvent] = useState();
     const [showEventDetails, setShowEventDetails] = useState(false);
@@ -169,48 +29,38 @@ const NewEvent = () => {
 
     const [modalEventFilter, setModalEventFilter] = useState('');
     const debouncedModalEventFilter = useDebounce(modalEventFilter, 300);
-    const [modalFilteredEvents, setModalFilteredEvents] = useState([]);
 
     const { position } = useUserLocation();
+    const { data: fixturesData, isLoading: isLoadingFixtures } = useFixtures(currDate);
+    const eventList = useMemo(() => fixturesData?.fixtures ?? [], [fixturesData]);
 
-    const { isLoading, sendRequest } = useHttpClient();
+    const currEvents = useMemo(() => {
+        const needle = debouncedEventFilter.toLowerCase();
+        return eventList.filter(x =>
+            x.homeTeamName.toLowerCase().includes(needle) ||
+            x.awayTeamName.toLowerCase().includes(needle)
+        );
+    }, [debouncedEventFilter, eventList]);
+
+    const modalFilteredEvents = useMemo(() => {
+        if (!pickedEvent) return [];
+        const needle = debouncedModalEventFilter.toLowerCase();
+        return eventList.filter(event =>
+            event.homeTeamName.toLowerCase().includes(needle) ||
+            event.awayTeamName.toLowerCase().includes(needle)
+        );
+    }, [debouncedModalEventFilter, eventList, pickedEvent]);
+
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery("(max-width: 1400px)");
 
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const currDate = new Date().toJSON().slice(0, 10);
-                const responseData = await sendRequest(`/fixtures?date=${currDate}`);
-                setEventList(responseData.fixtures);
-                setCurrEvents(responseData.fixtures);
-            } catch (err) { }
-        };
+    const createEventMutation = useMutation({
+        mutationFn: (formData) => createEvent(formData, auth.token),
+        onSuccess: () => navigate('/'),
+    });
 
-        fetchEvents();
-    }, [sendRequest]);
-
-    useEffect(() => {
-        const needle = debouncedEventFilter.toLowerCase();
-        const filtered = eventList.filter(x =>
-            x.homeTeamName.toLowerCase().includes(needle) ||
-            x.awayTeamName.toLowerCase().includes(needle)
-        );
-        setCurrEvents(filtered);
-    }, [debouncedEventFilter, eventList]);
-
-    useEffect(() => {
-        if (!pickedEvent) return;
-
-        const needle = debouncedModalEventFilter.toLowerCase();
-        const filtered = eventList.filter(event =>
-            event.homeTeamName.toLowerCase().includes(needle) ||
-            event.awayTeamName.toLowerCase().includes(needle)
-        );
-        setModalFilteredEvents(filtered);
-    }, [debouncedModalEventFilter, eventList, pickedEvent]);
-
+    const isLoading = isLoadingFixtures || createEventMutation.isPending;
 
     useEffect(() => {
         if (isSmallScreen && showEventDetails) {
@@ -222,115 +72,23 @@ const NewEvent = () => {
         setShowEventDetails(true);
     }, [pickedEvent]);
 
-    const HandleOnSubmit = async (event) => {
+    const HandleOnSubmit = (event) => {
         if (!auth.isLoggedIn) {
             navigate('/auth/login');
             return;
         }
-
-        try {
-            const formData = new FormData();
-            formData.append('coordinates', JSON.stringify(position));
-            formData.append('title', `${event.homeTeamName} vs ${event.awayTeamName}`);
-            formData.append('description', event.league);
-            formData.append('startTime', event.startTime);
-
-            await sendRequest(
-                '/events/',
-                'POST',
-                formData,
-                {
-                    "Authorization": `Bearer ${auth.token}`,
-                }
-            );
-            navigate('/');
-        } catch (err) { }
+        const formData = new FormData();
+        formData.append('coordinates', JSON.stringify(position));
+        formData.append('title', `${event.homeTeamName} vs ${event.awayTeamName}`);
+        formData.append('description', event.league);
+        formData.append('startTime', event.startTime);
+        createEventMutation.mutate(formData);
     };
 
     const handlePickEvent = (type) => {
         setPickedEvent(type);
         setShowEventDetails(true);
         setModalEventFilter('');
-        setModalFilteredEvents(eventList);
-    };
-
-    const renderLiveEvents = (numOfElements, events = currEvents) => {
-        return (
-            <div className="matches-list-live">
-                {events.filter(e => e.isLive).slice(0, numOfElements).map((match, index) => (
-                    <div key={index} className="match-card-live">
-                        <div className='match-card-live-top'>
-                            <div className="live-badge">
-                                <span className="live-dot"></span> LIVE
-                            </div>
-                            <div className="live-minute"><p>{match.currMinute}'</p></div>
-                            <div className="match-action-live">
-                                <button onClick={() => HandleOnSubmit(match)}>
-                                    Create event
-                                </button>
-                            </div>
-                        </div>
-                        <div className="match-card-live-teams">
-                            <div className="team">
-                                <img className="flag" src={match.homeTeamLogo} alt="home" />
-                                <span className="team">{match.homeTeamName}</span>
-                            </div>
-                            <div className="score" style={{ color: "#0D1B2A" }}>{match.score.home}</div>
-                        </div>
-                        <div className="match-card-live-teams">
-                            <div className="team">
-                                <img className="flag" src={match.awayTeamLogo} alt="away" />
-                                <span className="team">{match.awayTeamName}</span>
-                            </div>
-                            <div className="score" style={{ color: "#EF233C" }}>{match.score.away}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
-    const renderNextEvents = (numOfElements, events = currEvents) => {
-        return (
-            <div className="matches-list">
-                {events.filter(e => !e.isLive).slice(0, numOfElements).map((match, index) => (
-                    <div key={index} className="match-card">
-                        <div className='match-card-mini-top'>
-                            <div className="match-info-mini">
-                                <span>{match.startTime.slice(0, 10)}</span>
-                                <span>{match.startTime.slice(11, 16)}</span>
-                            </div>
-                            <div className="match-action-mini">
-                                <button onClick={() => HandleOnSubmit(match)}>
-                                    Create event
-                                </button>
-                            </div>
-                        </div>
-                        <div className="teams">
-                            <div className="home">
-                                <img className="flag" src={match.homeTeamLogo} alt="home" />
-                                <span className="team">{match.homeTeamName}</span>
-                            </div>
-                            <div className="teams-seprator"><span>VS</span></div>
-                            <div className="away">
-                                <span className="team">{match.awayTeamName}</span>
-                                <img className="flag" src={match.awayTeamLogo} alt="away" style={{ marginLeft: "1rem" }} />
-                            </div>
-                        </div>
-                        <div className="match-info">
-                            <span className='match-info-date'>{match.startTime.slice(0, 10)}</span>
-                            <span className='match-info-day'>{new Date(match.startTime.slice(0, 10)).toLocaleDateString("en-US", { weekday: "long" })}</span>
-                            <span className='match-info-time'>{match.startTime.slice(11, 16)}</span>
-                        </div>
-                        <div className="match-action">
-                            <button onClick={() => HandleOnSubmit(match)}>
-                                Create event
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
     };
 
     return (
@@ -354,8 +112,11 @@ const NewEvent = () => {
                                 autoComplete="off"
                             />
                         </div>
-                        {pickedEvent === "live" && renderLiveEvents(undefined, modalFilteredEvents)}
-                        {pickedEvent === "next" && renderNextEvents(undefined, modalFilteredEvents)}
+                        <MatchList
+                            events={modalFilteredEvents}
+                            type={pickedEvent}
+                            onSubmit={HandleOnSubmit}
+                        />
                     </div>
                 </Modal>
             )}
@@ -382,7 +143,12 @@ const NewEvent = () => {
                                 <h2 className="live-data-title">LIVE MATCHES</h2>
                                 <button onClick={() => handlePickEvent('live')}>See all results</button>
                             </div>
-                            {renderLiveEvents(3)}
+                            <MatchList
+                                events={currEvents}
+                                type="live"
+                                limit={3}
+                                onSubmit={HandleOnSubmit}
+                            />
                         </div>
                         <div className="matches-container-right">
                             <div className="header">
@@ -392,7 +158,12 @@ const NewEvent = () => {
                                     <button onClick={() => handlePickEvent('next')}>See all results</button>
                                 </div>
                             </div>
-                            {renderNextEvents(8)}
+                            <MatchList
+                                events={currEvents}
+                                type="next"
+                                limit={8}
+                                onSubmit={HandleOnSubmit}
+                            />
                         </div>
                     </div>
                 )}

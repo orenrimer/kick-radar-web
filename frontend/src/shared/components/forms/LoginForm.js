@@ -1,122 +1,43 @@
-import React, { useState, useReducer, useContext } from 'react';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import React from 'react';
 
-import { useHttpClient } from '../hooks/http-hook';
-import AuthContext from '../contexts/AuthContext';
-
-const initialState = {
-    email: { value: '', isValid: false },
-    password: { value: '', isValid: false },
-};
-
-const inputReducer = (state, action) => {
-    switch (action.type) {
-        case 'email':
-            return {
-                ...state,
-                email: {
-                    value: action.payload,
-                    isValid: /^\S+@\S+\.\S+$/.test(action.payload),
-                },
-            };
-        case 'password':
-            return {
-                ...state,
-                password: {
-                    value: action.payload,
-                    isValid: action.payload.length >= 8 && action.payload.length <= 12,
-                },
-            };
-        default:
-            return state;
-    }
-};
+import { useAuthForm } from './useAuthForm';
+import AuthField from '../UIComponents/AuthField/AuthField';
 
 const LoginForm = () => {
-    const auth = useContext(AuthContext);
-    const { error, sendRequest, clearError } = useHttpClient();
-    const [inputState, dispatch] = useReducer(inputReducer, initialState);
-    const [showPassword, setShowPassword] = useState(false);
-    const [errors, setErrors] = useState({ email: '', password: '' });
-
-    const validate = () => {
-        const next = { email: '', password: '' };
-        if (!inputState.email.isValid) next.email = 'Please provide a valid email address.';
-        if (!inputState.password.isValid) next.password = 'Password must be 8-12 characters long.';
-        return next;
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const validationErrors = validate();
-        setErrors(validationErrors);
-        if (validationErrors.email || validationErrors.password) return;
-
-        try {
-            const data = await sendRequest('/users/login', 'POST', {
-                email: inputState.email.value,
-                password: inputState.password.value,
-            });
-            auth.login(data.userId, data.token);
-        } catch {
-            // error surfaced via useHttpClient
-        }
-    };
+    const form = useAuthForm({
+        fields: ['email', 'password'],
+        endpoint: '/users/login',
+        buildBody: ({ email, password }) => ({ email, password }),
+    });
 
     return (
-        <form className="signin-form" onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="email">E-mail</label>
-                <div className={errors.email ? 'input-error' : ''}>
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="email"
-                        value={inputState.email.value}
-                        onChange={(e) => {
-                            setErrors((prev) => ({ ...prev, email: '' }));
-                            dispatch({ type: 'email', payload: e.target.value });
-                            clearError();
-                        }}
-                    />
-                </div>
-                {errors.email && (
-                    <div className="input-error-msg">
-                        <i className="fa-solid fa-triangle-exclamation" />
-                        <p>{errors.email}</p>
-                    </div>
-                )}
-            </div>
+        <form className="signin-form" onSubmit={form.handleSubmit} noValidate>
+            <AuthField
+                type="email"
+                name="email"
+                label="Email"
+                placeholder="example@email.com"
+                value={form.values.email}
+                error={form.errors.email}
+                onChange={form.handleChange('email')}
+            />
+            <AuthField
+                type="password"
+                name="password"
+                label="Password"
+                placeholder="Enter your password"
+                value={form.values.password}
+                error={form.errors.password}
+                onChange={form.handleChange('password')}
+                showPassword={form.showPassword}
+                togglePassword={form.togglePassword}
+            />
 
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="password">Password</label>
-                <div className="password-input">
-                    <input
-                        type={showPassword ? 'text' : 'password'}
-                        id="password"
-                        placeholder="password"
-                        value={inputState.password.value}
-                        onChange={(e) => {
-                            setErrors((prev) => ({ ...prev, password: '' }));
-                            dispatch({ type: 'password', payload: e.target.value });
-                            clearError();
-                        }}
-                    />
-                    <span onClick={() => setShowPassword((prev) => !prev)}>
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                    </span>
-                </div>
-                {errors.password && (
-                    <div className="input-error-msg">
-                        <i className="fa-solid fa-triangle-exclamation" />
-                        <p>{errors.password}</p>
-                    </div>
-                )}
-            </div>
+            {form.error && <p className="auth-error-banner">{form.error}</p>}
 
-            {error && <p className="auth-error-banner">{error}</p>}
-
-            <button type="submit" className="signin-btn">LOGIN</button>
+            <button type="submit" className="signin-btn">
+                Log In
+            </button>
         </form>
     );
 };

@@ -1,35 +1,29 @@
 import React, { useContext } from "react";
-import { NotificationContext } from "../contexts/NotificationContext";
-import AuthContext from "../contexts/AuthContext";
-import { useHttpClient } from '../hooks/http-hook';
-import { resolveImageUrl } from '../../../utils/resolveImageUrl';
+import { useMutation } from '@tanstack/react-query';
+
+import { NotificationContext } from "../../contexts/NotificationContext";
+import AuthContext from "../../contexts/AuthContext";
+import { updateRequestStatus } from '../../../../api/requests';
+import { resolveImageUrl } from '../../../../utils/resolveImageUrl';
 
 import "./Notifications.css";
-
 
 
 const Notifications = () => {
     const { notifications, setNotifications } = useContext(NotificationContext);
     const auth = useContext(AuthContext);
-    const { sendRequest } = useHttpClient();
 
-    const handleDecision = async (requestId, status) => {
-        try {
-            await sendRequest(
-                `/requests/${requestId}`,
-                'PATCH',
-                JSON.stringify({
-                    status,
-                    requestId,
-                    hostId: auth.userId,
-                }),
-                {
-                    'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${auth.token}`
-                });
+    const decisionMutation = useMutation({
+        mutationFn: ({ requestId, status }) =>
+            updateRequestStatus(
+                requestId,
+                { status, requestId, hostId: auth.userId },
+                auth.token
+            ),
+    });
 
-            // setNotifications()
-        } catch (err) { }
+    const handleDecision = (requestId, status) => {
+        decisionMutation.mutate({ requestId, status });
     };
 
     return (

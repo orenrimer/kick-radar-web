@@ -1,7 +1,6 @@
 import React from "react";
 
 import { useState, useContext, useEffect } from "react";
-import { useHttpClient } from "../hooks/http-hook";
 
 
 import "./Taskbar.css"
@@ -12,7 +11,6 @@ const Taskbar = (props) => {
 
     const [activeCategory, setActiveCategory] = useState('all');
     const auth = useContext(AuthContext);
-    const { isLoading, error, sendRequest } = useHttpClient();
 
 
     useEffect(() => {

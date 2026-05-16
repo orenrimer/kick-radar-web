@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import MapView from '../../shared/components/UIComponents/Map';
-import NavLinks from '../../shared/components/nevigation/NavLinks';
-import { useDebounce } from '../../shared/components/hooks/useDebounce';
+import MapView from '../../shared/components/UIComponents/Map/Map';
 import { isValidMapCenter } from '../../config/mapDefaults';
 
 import './NearbyEvents.css';
@@ -22,20 +20,15 @@ function calculateDistance(coords1, coords2) {
 }
 
 const NearbyEvents = (props) => {
-  const [filter, setFilter] = useState('');
-  const debouncedFilter = useDebounce(filter, 300);
   const [events, setEvents] = useState([]);
 
-  // Server already filters by radius via the 2dsphere index; here we only
-  // annotate each event with its distance (for display) and apply the
-  // text-search filter.
   useEffect(() => {
     if (!isValidMapCenter(props.position) || !Array.isArray(props.events)) {
       setEvents([]);
       return;
     }
 
-    const needle = debouncedFilter.toLowerCase();
+    const needle = (props.debouncedFilter || '').toLowerCase();
     const withDistance = props.events
       .map((e) => {
         if (!e?.coordinates) return { ...e, distance: Infinity };
@@ -51,39 +44,19 @@ const NearbyEvents = (props) => {
       );
 
     setEvents(withDistance);
-  }, [props.events, props.position, debouncedFilter]);
+  }, [props.events, props.position, props.debouncedFilter]);
 
   return (
-    <>
-      <div className="filter-container">
-        <div className="search-bar">
-          <i className="fa-solid fa-magnifying-glass" />
-          <input
-            id="address"
-            type="text"
-            value={filter}
-            placeholder="Search for a team or league"
-            onChange={(event) => setFilter(event.target.value)}
-            autoComplete="off"
-          />
-        </div>
-        <div style={{ margin: '2rem 20px 0 0' }}>
-          <NavLinks />
-        </div>
-      </div>
-      <div className="map-container">
-        <MapView
-          center={props.position}
-          style={{ height: '100%', width: '100%' }}
-          zoom={12}
-          locations={events}
-          onJoinRequest={props.onJoinRequest}
-          onCancelParticipation={props.onCancelParticipation}
-          onDelete={props.onDelete}
-          onCancelRequest={props.onCancelRequest}
-        />
-      </div>
-    </>
+    <MapView
+      center={props.position}
+      style={{ height: '100%', width: '100%' }}
+      zoom={12}
+      locations={events}
+      onJoinRequest={props.onJoinRequest}
+      onCancelParticipation={props.onCancelParticipation}
+      onDelete={props.onDelete}
+      onCancelRequest={props.onCancelRequest}
+    />
   );
 };
 

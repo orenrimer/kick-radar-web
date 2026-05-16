@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, useMemo } from 'react';
 import {
   Map,
   AdvancedMarker,
@@ -10,11 +10,11 @@ import {
 import {
   DEFAULT_MAP_CENTER,
   isValidMapCenter,
-} from '../../../config/mapDefaults';
-import AuthContext from '../contexts/AuthContext';
-import EventItem from '../../../places/components/EventItem';
-import PlusButton from './PlusButton';
-import Marker from './Marker';
+} from '../../../../config/mapDefaults';
+import AuthContext from '../../contexts/AuthContext';
+import EventItem from '../../../../places/components/EventItem';
+import PlusButton from '../PlusButton/PlusButton';
+import Marker from '../Marker/Marker';
 
 import './Map.css';
 
@@ -53,7 +53,14 @@ const MapView = ({
   onDelete,
   onCancelRequest,
 }) => {
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const selectedEvent = useMemo(
+    () =>
+      selectedEventId
+        ? locations.find((e) => (e.id || e._id) === selectedEventId)
+        : null,
+    [locations, selectedEventId]
+  );
   const auth = useContext(AuthContext);
 
   if (!isValidMapCenter(center)) return null;
@@ -70,7 +77,7 @@ const MapView = ({
       fullscreenControl={false}
       className={`map ${className || ''}`}
       style={style}
-      onClick={() => setSelectedEvent(null)}
+      onClick={() => setSelectedEventId(null)}
     >
       <RecenterOnFirstUpdate position={center} fallback={DEFAULT_MAP_CENTER} />
 
@@ -91,7 +98,7 @@ const MapView = ({
             key={key}
             position={event.coordinates}
             title={event.title}
-            onClick={() => setSelectedEvent(event)}
+            onClick={() => setSelectedEventId(event.id || event._id)}
           >
             <Marker distance={distance} event={event} />
           </AdvancedMarker>

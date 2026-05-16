@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-import CustomButton from '../UIComponents/CustomButton';
+import CustomButton from '../UIComponents/CustomButton/CustomButton';
 
 import './ImageUpload.css';
 

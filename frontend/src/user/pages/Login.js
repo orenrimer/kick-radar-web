@@ -5,10 +5,9 @@ import LoginForm from '../../shared/components/forms/LoginForm';
 
 const Login = () => (
     <AuthLayout
-        title="Sign In"
-        subtitle="Please sign in to your account."
+        title="Welcome back"
         footerPrompt="Don't have an account?"
-        footerLinkLabel="Sign up"
+        footerLinkLabel="Sign up for free"
         footerLinkTo="/auth/signup"
     >
         <LoginForm />

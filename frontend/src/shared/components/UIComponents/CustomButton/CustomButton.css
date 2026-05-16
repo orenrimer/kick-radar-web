@@ -1,4 +1,4 @@
-.button {
+﻿.button {
     background: transparent;
     border: none;
     padding: 1rem;
@@ -17,7 +17,7 @@
 }
 
 .button-primary {
-    background: #FA7470;
+    background: var(--color-brand-hover);
     color: white;
     border-radius: 8px;
 }

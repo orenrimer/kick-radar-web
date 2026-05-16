@@ -1,4 +1,4 @@
-.dropdown {
+﻿.dropdown {
     position: relative;
     min-width: 200px;
     font-family: Arial, sans-serif;
@@ -37,7 +37,7 @@
 }
 
 .dropdown-icon {
-    /* color: #fa7470; */
+    /* color: var(--color-brand-hover); */
     transition: transform 0.2s ease;
 }
 

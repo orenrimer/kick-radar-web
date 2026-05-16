@@ -1,7 +1,7 @@
 import React, { useRef, useState, useContext } from 'react';
-import EventItem from '../../../places/components/EventItem';
-import Card from './Card';
-import CustomButton from './CustomButton';
+import EventItem from '../../../../places/components/EventItem';
+import Card from '../Card/Card';
+import CustomButton from '../CustomButton/CustomButton';
 import "./Carousel.css"
 
 

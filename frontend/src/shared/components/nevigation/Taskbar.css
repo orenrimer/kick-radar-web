@@ -1,4 +1,4 @@
-.taskbar-menu {
+﻿.taskbar-menu {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -20,7 +20,7 @@
 
 
 .taskbar-events-catgory:hover {
-    color: #EF233C;
+    color: var(--color-brand);
     cursor: pointer;
 }
 

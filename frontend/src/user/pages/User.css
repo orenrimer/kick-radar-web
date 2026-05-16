@@ -1,4 +1,4 @@
-.user-container {
+﻿.user-container {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -73,21 +73,33 @@
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: #F6F5F5;
+    color: var(--color-bg-light);
 }
 
 .user-info a {
     display: block;
     text-decoration: none;
-    color: #EF233C;
+    color: var(--color-brand);
     font-size: 22px;
     margin-left: 0
+}
+
+.user-info__signin {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px !important;
+    color: #3E4A64 !important;
+}
+
+.user-info__signin svg {
+    font-size: 20px;
 }
 
 .user-info button {
     cursor: pointer;
     background-color: transparent;
-    color: #EF233C;
+    color: var(--color-brand);
     border: none;
     font-size: 20px;
     margin-left: 2rem;
@@ -95,7 +107,7 @@
 
 .user-info a:hover,
 .user-info button:hover {
-    color: #FA7470;
+    color: var(--color-brand-hover);
 }
 
 
@@ -206,6 +218,10 @@
     .user-info button {
         font-size: 22px;
         margin: 0;
+    }
+
+    .user-info__signin span {
+        display: none;
     }
 
 

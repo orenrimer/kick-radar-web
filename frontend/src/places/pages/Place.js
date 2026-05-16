@@ -1,69 +1,39 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { useHttpClient } from '../../shared/components/hooks/http-hook';
 import AuthContext from '../../shared/components/contexts/AuthContext';
 import EventItem from '../components/EventItem';
-import Loading from '../../shared/components/UIComponents/Loading';
-import Card from '../../shared/components/UIComponents/Card';
+import Loading from '../../shared/components/UIComponents/Loading/Loading';
+import Card from '../../shared/components/UIComponents/Card/Card';
+import { useEvent, eventKeys } from '../../queries/events';
 
+import './Place.css';
 
-import "./Place.css"
-
-const Place = (props) => {
-    const [loadedEvent, setLoadedEvent] = useState();
-    const { isLoading, error, sendRequest } = useHttpClient();
-
+const Place = () => {
     const auth = useContext(AuthContext);
-    const placeId = useParams().placeId;
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const placeId = useParams().placeId;
 
+    const { data, isLoading, error } = useEvent(placeId, auth.token);
+    const loadedEvent = data?.event;
 
-    const handleCancelParticipation = (eventId) => {
-        setLoadedEvent((prev) => {
-            prev.participants = [...prev.participants.filter((userId) => userId !== auth.userId)]
-        });
-    }
+    const refreshThisEvent = () =>
+        queryClient.invalidateQueries({ queryKey: eventKeys.byId(placeId) });
 
-    const placeDeletedHandler = () => {
-        navigate('/');
-    };
-
-    const placeLikeHandler = (placeId, up) => {
-        setLoadedEvent((prev) => {
-            if (up) {
-                prev.likedBy.push(auth.userId);
-            } else {
-                prev.likedBy = [...prev.likedBy.filter((userId) => userId !== auth.userId)]
-            }
-
-            return prev
-        })
-    };
-
-    useEffect(() => {
-        const fetchPlaces = async () => {
-            try {
-                const responseData = await sendRequest(
-                    `/events/${placeId}`
-                );
-                setLoadedEvent(responseData.event);
-            } catch (err) { }
-        };
-        fetchPlaces();
-    }, [sendRequest, placeId]);
-
-
+    const handleCancelParticipation = () => refreshThisEvent();
+    const placeDeletedHandler = () => navigate('/');
 
     return (
         <React.Fragment>
-            {error && <Card className="center error"><h2>{error}</ h2></Card>}
+            {error && <Card className="center error"><h2>{error.message}</h2></Card>}
             {isLoading && (
                 <div className="center">
                     <Loading />
                 </div>
             )}
-            {!isLoading && loadedEvent &&
+            {!isLoading && loadedEvent && (
                 <EventItem
                     id={loadedEvent._id}
                     self={loadedEvent}
@@ -73,26 +43,24 @@ const Place = (props) => {
                     coordinates={loadedEvent.coordinates}
                     host={loadedEvent.host}
                     numOfParticipants={loadedEvent.numOfParticipants}
-                    startTime={new Date(loadedEvent.startTime).toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric"
+                    startTime={new Date(loadedEvent.startTime).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
                     })}
-
-                    showFull={true}
+                    showFull
                     isParticipated={loadedEvent.participants.includes(auth.userId)}
                     isRequested={loadedEvent.pending.includes(auth.userId)}
-                    onJoinRequest={() => { }}
+                    onJoinRequest={refreshThisEvent}
                     onCancelParticipation={handleCancelParticipation}
-                    onDelete={() => { }}
-                    onCancelRequest={() => { }}
+                    onDelete={placeDeletedHandler}
+                    onCancelRequest={refreshThisEvent}
                 />
-            }
+            )}
         </React.Fragment>
     );
-
-}
+};
 
 export default Place;

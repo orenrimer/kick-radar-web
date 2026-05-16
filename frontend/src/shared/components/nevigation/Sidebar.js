@@ -3,7 +3,6 @@ import { useState, useContext, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { env } from '../../../config/env';
 
-import { useHttpClient } from "../hooks/http-hook";
 import { PiSignInBold } from "react-icons/pi";
 import User from "../../../user/pages/User";
 import AuthContext from "../contexts/AuthContext";
@@ -17,7 +16,6 @@ const Sidebar = (props) => {
     // return ReactDom.createPortal(content, document.getElementById('sidebar-hook'))
     const [activeCategory, setActiveCategory] = useState('all');
     const auth = useContext(AuthContext);
-    const { isLoading, error, sendRequest } = useHttpClient();
 
 
     // useEffect(() => {
