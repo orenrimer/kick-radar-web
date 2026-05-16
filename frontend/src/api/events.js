@@ -1,7 +1,19 @@
 import { apiRequest } from './client';
 
-export const fetchAllEvents = (token, signal) =>
-  apiRequest('/events', { token, signal });
+// `near` is an optional { lat, lng, radiusKm } that filters events
+// server-side via the 2dsphere index. Omit it to fetch all events.
+export const fetchAllEvents = (token, signal, near) => {
+  let path = '/events';
+  if (near && Number.isFinite(near.lat) && Number.isFinite(near.lng) && near.radiusKm > 0) {
+    const params = new URLSearchParams({
+      lat: String(near.lat),
+      lng: String(near.lng),
+      radius: String(near.radiusKm),
+    });
+    path = `${path}?${params.toString()}`;
+  }
+  return apiRequest(path, { token, signal });
+};
 
 export const fetchUserEvents = (userId, token, signal) =>
   apiRequest(`/events/user/${userId}`, { token, signal });

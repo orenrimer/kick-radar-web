@@ -6,6 +6,8 @@ import { FaLongArrowAltLeft } from "react-icons/fa";
 import Loading from '../../shared/components/UIComponents/Loading';
 import Modal from '../../shared/components/UIComponents/Modal';
 import useMediaQuery from '../../shared/components/hooks/use-media-hook';
+import { useDebounce } from '../../shared/components/hooks/useDebounce';
+import { useUserLocation } from '../../shared/components/hooks/useUserLocation';
 import AuthContext from '../../shared/components/contexts/AuthContext';
 import { PiLineVerticalBold } from "react-icons/pi";
 
@@ -163,11 +165,13 @@ const NewEvent = () => {
     const [showEventDetails, setShowEventDetails] = useState(false);
 
     const [eventFilter, setEventFilter] = useState('');
+    const debouncedEventFilter = useDebounce(eventFilter, 300);
 
     const [modalEventFilter, setModalEventFilter] = useState('');
+    const debouncedModalEventFilter = useDebounce(modalEventFilter, 300);
     const [modalFilteredEvents, setModalFilteredEvents] = useState([]);
 
-    const [position, setPosition] = useState({ lat: null, lng: null });
+    const { position } = useUserLocation();
 
     const { isLoading, sendRequest } = useHttpClient();
     const auth = useContext(AuthContext);
@@ -188,22 +192,24 @@ const NewEvent = () => {
     }, [sendRequest]);
 
     useEffect(() => {
+        const needle = debouncedEventFilter.toLowerCase();
         const filtered = eventList.filter(x =>
-            x.homeTeamName.toLowerCase().includes(eventFilter.toLowerCase()) ||
-            x.awayTeamName.toLowerCase().includes(eventFilter.toLowerCase())
+            x.homeTeamName.toLowerCase().includes(needle) ||
+            x.awayTeamName.toLowerCase().includes(needle)
         );
         setCurrEvents(filtered);
-    }, [eventFilter, eventList]);
+    }, [debouncedEventFilter, eventList]);
 
     useEffect(() => {
         if (!pickedEvent) return;
 
+        const needle = debouncedModalEventFilter.toLowerCase();
         const filtered = eventList.filter(event =>
-            event.homeTeamName.toLowerCase().includes(modalEventFilter.toLowerCase()) ||
-            event.awayTeamName.toLowerCase().includes(modalEventFilter.toLowerCase())
+            event.homeTeamName.toLowerCase().includes(needle) ||
+            event.awayTeamName.toLowerCase().includes(needle)
         );
         setModalFilteredEvents(filtered);
-    }, [modalEventFilter, eventList, pickedEvent]);
+    }, [debouncedModalEventFilter, eventList, pickedEvent]);
 
 
     useEffect(() => {
@@ -215,17 +221,6 @@ const NewEvent = () => {
     useEffect(() => {
         setShowEventDetails(true);
     }, [pickedEvent]);
-
-    useEffect(() => {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                setPosition({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                });
-            });
-        }
-    }, []);
 
     const HandleOnSubmit = async (event) => {
         if (!auth.isLoggedIn) {

@@ -5,12 +5,55 @@ const Event = require('../models/event');
 const User = require('../models/user');
 const Request = require('../models/request');
 
-const findAllEvents = async () => {
-  const events = await Event.find();
-  if (!events.length) {
-    return [];
+// Mongo stores coordinates as GeoJSON Point ([lng, lat]); the frontend talks
+// in { lat, lng }. These helpers translate at the service boundary so the
+// rest of the backend / frontend never sees GeoJSON.
+const toGeoJSON = ({ lat, lng }) => ({
+  type: 'Point',
+  coordinates: [lng, lat],
+});
+
+const fromGeoJSON = (point) => {
+  if (!point) return undefined;
+  // Defensive: tolerate the legacy { lat, lng } shape if any old docs remain.
+  if (Array.isArray(point.coordinates)) {
+    const [lng, lat] = point.coordinates;
+    return { lat, lng };
   }
-  return events.map((event) => event.toObject({ getters: true }));
+  if (typeof point.lat === 'number' && typeof point.lng === 'number') {
+    return { lat: point.lat, lng: point.lng };
+  }
+  return undefined;
+};
+
+const toEventOutput = (event) => {
+  const obj = event.toObject({ getters: true });
+  obj.coordinates = fromGeoJSON(obj.coordinates);
+  return obj;
+};
+
+const findAllEvents = async ({ lat, lng, radiusKm, limit = 100 } = {}) => {
+  const hasGeoFilter =
+    typeof lat === 'number' &&
+    typeof lng === 'number' &&
+    typeof radiusKm === 'number' &&
+    radiusKm > 0;
+
+  const query = hasGeoFilter
+    ? {
+        coordinates: {
+          $nearSphere: {
+            $geometry: { type: 'Point', coordinates: [lng, lat] },
+            $maxDistance: radiusKm * 1000,
+          },
+        },
+      }
+    : {};
+
+  // $nearSphere sorts by distance, so with a geo filter this returns the
+  // N closest events. Without one, it caps the unsorted fetch at N.
+  const events = await Event.find(query).limit(limit);
+  return events.map(toEventOutput);
 };
 
 const findEventById = async (eventId) => {
@@ -18,7 +61,7 @@ const findEventById = async (eventId) => {
   if (!event) {
     throw new HttpError('Could not find an event for the provided id.', 404);
   }
-  return event.toObject({ getters: true });
+  return toEventOutput(event);
 };
 
 const findEventsByUserId = async (userId) => {
@@ -34,8 +77,7 @@ const findEventsByUserId = async (userId) => {
     );
   }
 
-  const mapEvents = (events) =>
-    events.map((event) => event.toObject({ getters: true }));
+  const mapEvents = (events) => events.map(toEventOutput);
 
   return {
     hostedEvents: mapEvents(user.hostedEvents),
@@ -51,7 +93,7 @@ const createEvent = async ({ title, description, coordinates, startTime, hostId 
     title,
     description,
     address,
-    coordinates,
+    coordinates: toGeoJSON(coordinates),
     numOfParticipants: 1,
     host: hostId,
     startTime,
@@ -81,7 +123,7 @@ const createEvent = async ({ title, description, coordinates, startTime, hostId 
     session.endSession();
   }
 
-  return createdEvent.toObject({ getters: true });
+  return toEventOutput(createdEvent);
 };
 
 const deleteEvent = async (eventId, userId) => {

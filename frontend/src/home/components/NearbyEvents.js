@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import MapView from '../../shared/components/UIComponents/Map';
 import NavLinks from '../../shared/components/nevigation/NavLinks';
-import { DEFAULT_MAP_CENTER, isValidMapCenter } from '../../config/mapDefaults';
+import { useDebounce } from '../../shared/components/hooks/useDebounce';
+import { isValidMapCenter } from '../../config/mapDefaults';
 
 import './NearbyEvents.css';
 
@@ -20,55 +21,37 @@ function calculateDistance(coords1, coords2) {
   return R * c;
 }
 
-const MAX_RANGE = 250;
-
 const NearbyEvents = (props) => {
   const [filter, setFilter] = useState('');
+  const debouncedFilter = useDebounce(filter, 300);
   const [events, setEvents] = useState([]);
-  const [position, setPosition] = useState(DEFAULT_MAP_CENTER);
 
+  // Server already filters by radius via the 2dsphere index; here we only
+  // annotate each event with its distance (for display) and apply the
+  // text-search filter.
   useEffect(() => {
-    if (!('geolocation' in navigator)) {
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (geo) => {
-        setPosition({
-          lat: geo.coords.latitude,
-          lng: geo.coords.longitude,
-        });
-      },
-      () => {
-        setPosition(DEFAULT_MAP_CENTER);
-      },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!isValidMapCenter(position) || !Array.isArray(props.events)) {
+    if (!isValidMapCenter(props.position) || !Array.isArray(props.events)) {
       setEvents([]);
       return;
     }
 
-    const withDistance = props.events.map((e) => {
-      if (!e?.coordinates) return { ...e, distance: Infinity };
-      return {
-        ...e,
-        distance: calculateDistance(position, e.coordinates),
-      };
-    });
+    const needle = debouncedFilter.toLowerCase();
+    const withDistance = props.events
+      .map((e) => {
+        if (!e?.coordinates) return { ...e, distance: Infinity };
+        return {
+          ...e,
+          distance: calculateDistance(props.position, e.coordinates),
+        };
+      })
+      .filter(
+        (x) =>
+          x.title?.toLowerCase().includes(needle) ||
+          x.description?.toLowerCase().includes(needle)
+      );
 
-    const filtered = withDistance.filter(
-      (x) =>
-        x.distance <= MAX_RANGE &&
-        (x.title?.toLowerCase().includes(filter.toLowerCase()) ||
-          x.description?.toLowerCase().includes(filter.toLowerCase()))
-    );
-
-    setEvents(filtered);
-  }, [props.events, position, filter]);
+    setEvents(withDistance);
+  }, [props.events, props.position, debouncedFilter]);
 
   return (
     <>
@@ -90,7 +73,7 @@ const NearbyEvents = (props) => {
       </div>
       <div className="map-container">
         <MapView
-          center={position}
+          center={props.position}
           style={{ height: '100%', width: '100%' }}
           zoom={12}
           locations={events}
