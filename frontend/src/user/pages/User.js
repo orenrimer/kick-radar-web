@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { resolveImageUrl } from '../../utils/resolveImageUrl';
 
 import AuthContext from "../../shared/components/contexts/AuthContext";
 import { useHttpClient } from '../../shared/components/hooks/http-hook';
@@ -18,7 +19,7 @@ const User = (props) => {
     const [activeCategory, setActiveCategory] = useState('hosted');
     const { isLoading, error, sendRequest } = useHttpClient();
 
-    const history = useHistory();
+    const navigate = useNavigate();
     const auth = useContext(AuthContext);
 
 
@@ -76,7 +77,7 @@ const User = (props) => {
         const fetchUserData = async () => {
             try {
                 const responseData = await sendRequest(
-                    `${process.env.REACT_APP_BACKEND_URL}/users/${auth.userId}`
+                    `/users/${auth.userId}`
                 );
                 setUserData(responseData.user)
             } catch (err) { }
@@ -85,7 +86,7 @@ const User = (props) => {
         const fetchUserEvents = async () => {
             try {
                 const responseData = await sendRequest(
-                    `${process.env.REACT_APP_BACKEND_URL}/events/user/${auth.userId}`
+                    `/events/user/${auth.userId}`
                 );
 
                 setHostedEvents(responseData.hostedEvents);
@@ -105,7 +106,7 @@ const User = (props) => {
                 const formData = new FormData();
                 formData.append('image', file);
                 const responseData = await sendRequest(
-                    `${process.env.REACT_APP_BACKEND_URL}/users/${auth.userId}`,
+                    `/users/${auth.userId}`,
                     'PATCH',
                     formData,
                     { "Authorization": `Bearer ${auth.token}` }
@@ -170,7 +171,7 @@ const User = (props) => {
             <div className="user-info" >
                 {auth.isLoggedIn && userData &&
                     <div className="user-info__image">
-                        <Avatar image={`${process.env.REACT_APP_STATIC_URL}/${userData.image}`} alt={`${process.env.REACT_APP_STATIC_URL}/avatar.jpg`} />
+                        <Avatar image={resolveImageUrl(userData.image)} alt="Profile" />
                         {/* <div className="user-info__change-image-btn">
                        
                         <ImageUpload style={{ 'fontSize': '17px', 'padding': "0.7rem" }} onInput={uploadUserImage}>
@@ -179,13 +180,13 @@ const User = (props) => {
                       
                     </div> */}
                     </div>}
-                {!auth.isLoggedIn && <a href="./auth"><PiSignInBold /></a>}
+                {!auth.isLoggedIn && <a href="/auth/login"><PiSignInBold /></a>}
                 <div className="user-info__content">
                     {auth.isLoggedIn && userData && <h5 style={{ fontSize: "14px", fontWeight: "700" }}>{userData.name}</h5 >}
                     {auth.isLoggedIn && userData && <h5>{userData.email}</h5>}
                 </div>
                 {auth.isLoggedIn && userData &&
-                    <button onClick={() => { history.push('/'); auth.logout(); }} >
+                    <button onClick={() => { navigate('/'); auth.logout(); }} >
                         <PiSignOutBold style={{ fontSize: "20px" }} />
                     </button>}
             </div>

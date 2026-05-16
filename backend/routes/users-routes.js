@@ -23,6 +23,12 @@ router.post(
 
 router.post('/login', usersController.login);
 
+router.post(
+  '/google',
+  [check('credential').not().isEmpty()],
+  usersController.googleLogin
+);
+
 router.get('/', usersController.getAllUsers);
 
 router.get('/:uid', usersController.getUser);

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from 'react-router-dom';
+import { env } from '../../../config/env';
 
 import CustomButton from "../UIComponents/CustomButton";
 import Sidebar from "./Sidebar";
@@ -37,7 +38,7 @@ const Header = () => {
                 </div> */}
                 <div className="main-navigation__logo">
                     <Link to="/" style={{ display: "flex" }}>
-                        <img src={`${process.env.REACT_APP_STATIC_URL}/footy-finder-logo-small.svg`} alt='FOOTY FINDER' />
+                        <img src={`${env.staticUrl}/footy-finder-logo-small.svg`} alt="Kick Radar" />
                     </Link>
                 </div>
                 <nav className="main-navigation__header-nav">

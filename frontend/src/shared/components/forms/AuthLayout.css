@@ -1,0 +1,32 @@
+.authentication-continer {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: start;
+    margin-top: 8rem;
+    width: 560px;
+    max-width: 35rem;
+    padding: 0;
+    overflow: visible;
+}
+
+.authentication-logo {
+    margin: 0;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.authentication-logo a {
+    position: absolute;
+    top: -30px;
+}
+
+@media (max-width: 600px) {
+    .authentication-continer {
+        margin-top: 5rem;
+        width: 440px;
+    }
+}

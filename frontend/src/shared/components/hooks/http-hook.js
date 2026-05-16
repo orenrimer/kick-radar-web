@@ -1,4 +1,16 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { apiRequest, ApiError } from '../../../api/client';
+
+const toPath = (urlOrPath) => {
+  if (urlOrPath.startsWith('http')) {
+    const pathname = new URL(urlOrPath).pathname;
+    return pathname.replace(/^\/api/, '') || pathname;
+  }
+  if (urlOrPath.includes('/api/')) {
+    return urlOrPath.slice(urlOrPath.indexOf('/api/') + 4);
+  }
+  return urlOrPath.startsWith('/') ? urlOrPath : `/${urlOrPath}`;
+};
 
 export const useHttpClient = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -7,33 +19,41 @@ export const useHttpClient = () => {
   const activeHttpRequests = useRef([]);
 
   const sendRequest = useCallback(
-    async (url, method = 'GET', body = null, headers = {}) => {
+    async (urlOrPath, method = 'GET', body = null, headers = {}) => {
       setIsLoading(true);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
 
       try {
-        const response = await fetch(url, {
+        const path = toPath(urlOrPath);
+        const authHeader = headers.Authorization || headers.authorization;
+        const token = authHeader?.replace(/^Bearer\s+/i, '');
+
+        let requestBody = body;
+        if (typeof body === 'string') {
+          try {
+            requestBody = JSON.parse(body);
+          } catch {
+            requestBody = body;
+          }
+        }
+
+        const responseData = await apiRequest(path, {
           method,
-          body,
-          headers,
-          signal: httpAbortCtrl.signal
+          body: requestBody,
+          token,
+          signal: httpAbortCtrl.signal,
         });
 
-        const responseData = await response.json();
-
         activeHttpRequests.current = activeHttpRequests.current.filter(
-          reqCtrl => reqCtrl !== httpAbortCtrl
+          (reqCtrl) => reqCtrl !== httpAbortCtrl
         );
-
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
 
         setIsLoading(false);
         return responseData;
       } catch (err) {
-        setError(err.message);
+        const message = err instanceof ApiError ? err.message : err.message;
+        setError(message);
         setIsLoading(false);
         throw err;
       }
@@ -47,7 +67,7 @@ export const useHttpClient = () => {
 
   useEffect(() => {
     return () => {
-      activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort());
+      activeHttpRequests.current.forEach((abortCtrl) => abortCtrl.abort());
     };
   }, []);
 

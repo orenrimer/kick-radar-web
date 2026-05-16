@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { useHttpClient } from '../../shared/components/hooks/http-hook';
 import AuthContext from '../../shared/components/contexts/AuthContext';
@@ -17,7 +16,7 @@ const Place = (props) => {
 
     const auth = useContext(AuthContext);
     const placeId = useParams().placeId;
-    const history = useHistory();
+    const navigate = useNavigate();
 
 
     const handleCancelParticipation = (eventId) => {
@@ -27,7 +26,7 @@ const Place = (props) => {
     }
 
     const placeDeletedHandler = () => {
-        history.push('/');
+        navigate('/');
     };
 
     const placeLikeHandler = (placeId, up) => {
@@ -46,7 +45,7 @@ const Place = (props) => {
         const fetchPlaces = async () => {
             try {
                 const responseData = await sendRequest(
-                    `${process.env.REACT_APP_BACKEND_URL}/events/${placeId}`
+                    `/events/${placeId}`
                 );
                 setLoadedEvent(responseData.event);
             } catch (err) { }

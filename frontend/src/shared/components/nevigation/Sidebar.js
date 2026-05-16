@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from 'react-router-dom';
+import { env } from '../../../config/env';
 
 import { useHttpClient } from "../hooks/http-hook";
 import { PiSignInBold } from "react-icons/pi";
@@ -61,7 +62,7 @@ const Sidebar = (props) => {
         <React.Fragment>
             <div className="sidebar-top">
                 <div className="sidebar-logo-large">
-                    <img src={`${process.env.REACT_APP_STATIC_URL}/kick-radar-logo-blue.png`} alt='FOOTY FINDER' />
+                    <img src={`${env.staticUrl}/kick-radar-logo-blue.png`} alt="Kick Radar" />
                 </div>
                 <div className="sidebar-menu">
                     <div className="sidebar-events">

@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom/cjs/react-router-dom.min";
-import { useHistory } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import { useHttpClient } from "../hooks/http-hook";
 import Notifications from "../UIComponents/Notifications";
@@ -16,7 +15,7 @@ const NavLinks = (props) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
 
     const auth = useContext(AuthContext);
-    const history = useHistory();
+    const navigate = useNavigate();
     const { notifications } = useContext(NotificationContext); // Access notifications from context
 
 
@@ -44,7 +43,7 @@ const NavLinks = (props) => {
                         {
                             auth.isLoggedIn &&
                             <div className="nav-dropdown-item"><button onClick={() => {
-                                history.push('/');
+                                navigate('/');
                                 auth.logout();
                             }} >Sign out</button></div>
                         }

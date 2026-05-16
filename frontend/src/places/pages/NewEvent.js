@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useHttpClient } from '../../shared/components/hooks/http-hook';
 import { FaLongArrowAltLeft } from "react-icons/fa";
 
@@ -171,37 +171,16 @@ const NewEvent = () => {
 
     const { isLoading, sendRequest } = useHttpClient();
     const auth = useContext(AuthContext);
-    const history = useHistory();
+    const navigate = useNavigate();
     const isSmallScreen = useMediaQuery("(max-width: 1400px)");
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
                 const currDate = new Date().toJSON().slice(0, 10);
-                const responseData = await sendRequest(
-                    `https://v3.football.api-sports.io/fixtures?date=${currDate}&status=NS-1H-HT-2H-ET-P&timezone=Asia/Jerusalem`,
-                    'GET',
-                    null,
-                    {
-                        "x-rapidapi-key": "ca8f9b4de21ffa3173390ced3d934c40",
-                        "x-rapidapi-host": "v3.football.api-sports.io"
-                    }
-                );
-
-                const eventsDetailes = responseData.response.map((event) => ({
-                    homeTeamName: event.teams.home.name,
-                    awayTeamName: event.teams.away.name,
-                    homeTeamLogo: event.teams.home.logo,
-                    awayTeamLogo: event.teams.away.logo,
-                    league: event.league.name,
-                    startTime: event.fixture.date,
-                    isLive: event.fixture.status.short !== "NS",
-                    currMinute: event.fixture.status.elapsed,
-                    score: event.goals
-                }));
-
-                setEventList(eventsDetailes);
-                setCurrEvents(eventsDetailes);
+                const responseData = await sendRequest(`/fixtures?date=${currDate}`);
+                setEventList(responseData.fixtures);
+                setCurrEvents(responseData.fixtures);
             } catch (err) { }
         };
 
@@ -250,7 +229,7 @@ const NewEvent = () => {
 
     const HandleOnSubmit = async (event) => {
         if (!auth.isLoggedIn) {
-            history.push('/auth');
+            navigate('/auth/login');
             return;
         }
 
@@ -262,14 +241,14 @@ const NewEvent = () => {
             formData.append('startTime', event.startTime);
 
             await sendRequest(
-                `${process.env.REACT_APP_BACKEND_URL}/events/`,
+                '/events/',
                 'POST',
                 formData,
                 {
                     "Authorization": `Bearer ${auth.token}`,
                 }
             );
-            history.push('/');
+            navigate('/');
         } catch (err) { }
     };
 

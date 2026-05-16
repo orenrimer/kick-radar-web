@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from 'react-router-dom';
 
 import Card from "../../shared/components/UIComponents/Card";
 import Avatar from "../../shared/components/UIComponents/Avatar";

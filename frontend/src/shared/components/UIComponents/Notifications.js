@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { NotificationContext } from "../contexts/NotificationContext";
 import AuthContext from "../contexts/AuthContext";
 import { useHttpClient } from '../hooks/http-hook';
+import { resolveImageUrl } from '../../../utils/resolveImageUrl';
 
 import "./Notifications.css";
 
@@ -15,7 +16,7 @@ const Notifications = () => {
     const handleDecision = async (requestId, status) => {
         try {
             await sendRequest(
-                `${process.env.REACT_APP_BACKEND_URL}/requests/${requestId}`,
+                `/requests/${requestId}`,
                 'PATCH',
                 JSON.stringify({
                     status,
@@ -40,7 +41,7 @@ const Notifications = () => {
                 {notifications && notifications.map((notification) => (
                     <li key={notification._id} className="request">
                         <div className="notification-info">
-                            <img src={`${process.env.REACT_APP_STATIC_URL}/${notification.requesterId.image}`} />
+                            <img src={resolveImageUrl(notification.requesterId.image)} alt="" />
                             <p>
                                 <b>{notification.requesterId.name}</b> wants to join your event:
                                 <br />

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useHttpClient } from "../../shared/components/hooks/http-hook";
 import AuthContext from "../../shared/components/contexts/AuthContext";
@@ -17,7 +17,7 @@ import "./EventItem.css"
 
 const EventItem = (props) => {
     const auth = useContext(AuthContext);
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [showLogin, setShowLogin] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -31,7 +31,7 @@ const EventItem = (props) => {
         setShowConfirm(false);
         try {
             await sendRequest(
-                `${process.env.REACT_APP_BACKEND_URL}/events/${props.id}`,
+                `/events/${props.id}`,
                 'DELETE',
                 null,
                 { Authorization: `Bearer ${auth.token}` }
@@ -43,23 +43,20 @@ const EventItem = (props) => {
 
     const handleJoinRequest = async () => {
         if (!auth.isLoggedIn) {
-            history.push('/auth');
+            navigate('/auth/login');
             return;
         }
 
         try {
             await sendRequest(
-                `${process.env.REACT_APP_BACKEND_URL}/requests/send`,
+                '/requests/send',
                 'POST',
-                JSON.stringify({
+                {
                     eventId: props.id,
                     requesterId: auth.userId,
                     hostId: props.host
-                }),
-                {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
+                },
+                { Authorization: `Bearer ${auth.token}` }
             );
             setIsRequested(true);
             props.onJoinRequest(props.self);
@@ -70,17 +67,10 @@ const EventItem = (props) => {
     const handleCancelParticipation = async () => {
         try {
             await sendRequest(
-                `${process.env.REACT_APP_BACKEND_URL}/users/${auth.userId}`,
+                `/users/${auth.userId}`,
                 'PATCH',
-                JSON.stringify({
-                    eventId: props.id,
-                    requesterId: auth.userId,
-                    hostId: props.host
-                }),
-                {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
+                { eventId: props.id },
+                { Authorization: `Bearer ${auth.token}` }
             );
             setIsParticipating(false);
             setnumOfParticipants(prev => prev - 1);
@@ -92,13 +82,10 @@ const EventItem = (props) => {
     const handleCancelRequest = async () => {
         try {
             await sendRequest(
-                `${process.env.REACT_APP_BACKEND_URL}/requests/${props.id}/${auth.userId}`,
+                `/requests/${props.id}/${auth.userId}`,
                 'DELETE',
                 null,
-                {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
+                { Authorization: `Bearer ${auth.token}` }
             )
             setIsRequested(false);
             props.onCancelRequest(props.id);
@@ -202,7 +189,7 @@ const EventItem = (props) => {
                             <div className="event-item__action">
                                 {auth.isLoggedIn ? <button onClick={handleJoinRequest}>
                                     Request to Join <FaArrowRight />
-                                </button> : <a href="./auth">
+                                </button> : <a href="/auth/login">
                                     Request to Join <FaArrowRight /></a>}
 
                             </div >
@@ -277,7 +264,7 @@ const EventItem = (props) => {
                                         {auth.isLoggedIn ? <button onClick={handleJoinRequest}>
 
                                             Request to join
-                                        </button> : <a href="./auth">
+                                        </button> : <a href="/auth/login">
                                             Request to join</a>}
 
                                     </div >

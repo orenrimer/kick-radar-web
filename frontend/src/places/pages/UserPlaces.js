@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { useParams } from 'react-router-dom';
 
 import { useHttpClient } from '../../shared/components/hooks/http-hook';
 import Loading from '../../shared/components/UIComponents/Loading';
@@ -25,7 +25,7 @@ const UserPlaces = (props) => {
         const fetchPlaces = async () => {
             try {
                 const responseData = await sendRequest(
-                    `${process.env.REACT_APP_BACKEND_URL}/events/user/${userId}`
+                    `/events/user/${userId}`
                 );
                 setLoadedPlaces(responseData.places);
             } catch (err) { }
