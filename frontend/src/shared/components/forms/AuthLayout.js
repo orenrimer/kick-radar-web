@@ -10,7 +10,6 @@ import './LoginForm.css';
 
 const AuthLayout = ({
   title,
-  subtitle,
   footerPrompt,
   footerLinkLabel,
   footerLinkTo,
@@ -33,7 +32,12 @@ const AuthLayout = ({
       <div className="signin-container">
         <div className="signin-box">
           <h2>{title}</h2>
-          {subtitle && <p>{subtitle}</p>}
+          <div className="links">
+            <p>
+              {footerPrompt}{' '}
+              <Link to={footerLinkTo}>{footerLinkLabel}</Link>
+            </p>
+          </div>
 
           <GoogleSignInButton
             onSuccess={() => setGoogleError('')}
@@ -48,13 +52,6 @@ const AuthLayout = ({
           </div>
 
           {children}
-
-          <div className="links">
-            <p>
-              {footerPrompt}{' '}
-              <Link to={footerLinkTo}>{footerLinkLabel}</Link>
-            </p>
-          </div>
         </div>
       </div>
     </Card>

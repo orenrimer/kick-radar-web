@@ -4,10 +4,10 @@ import "./Marker.css"
 
 
 
-const Marker = ({ distance, isCenter }) => {
+const Marker = ({ distance, isCenter, selected }) => {
     return (
         <React.Fragment>
-            {!isCenter && <div className="distance-badge">
+            {!isCenter && <div className={`distance-badge ${selected ? 'distance-badge--selected' : ''}`}>
                 <div className="icon">
                     <IoFootball />
                 </div>

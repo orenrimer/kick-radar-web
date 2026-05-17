@@ -1,29 +1,15 @@
-import React, { useState, useContext, useRef, useEffect, useMemo } from 'react';
-import {
-  Map,
-  AdvancedMarker,
-  MapControl,
-  ControlPosition,
-  useMap,
-} from '@vis.gl/react-google-maps';
+import React, { useRef, useEffect } from 'react';
+import { Map, AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 
 import {
   DEFAULT_MAP_CENTER,
   isValidMapCenter,
 } from '../../../../config/mapDefaults';
-import AuthContext from '../../contexts/AuthContext';
-import EventItem from '../../../../places/components/EventItem';
-import PlusButton from '../PlusButton/PlusButton';
 import Marker from '../Marker/Marker';
 
 import './Map.css';
 
 const MAP_ID = 'd911c4be45d3392c';
-
-const hasUser = (list, userId) =>
-  (list || []).some(
-    (p) => (typeof p === 'object' ? p.id || p._id : p) === userId
-  );
 
 // Recenter the map once when geolocation moves the position off the default.
 // Without this, the map opens at DEFAULT_MAP_CENTER and never follows the
@@ -42,27 +28,30 @@ const RecenterOnFirstUpdate = ({ position, fallback }) => {
   return null;
 };
 
+const PanToEvent = ({ focusTo, locations }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map || !focusTo?.id) return;
+    const event = locations.find((e) => (e.id || e._id) === focusTo.id);
+    if (event?.coordinates) {
+      map.panTo(event.coordinates);
+    }
+  }, [map, focusTo, locations]);
+
+  return null;
+};
+
 const MapView = ({
   center,
   zoom = 12,
   locations = [],
   className,
   style,
-  onJoinRequest,
-  onCancelParticipation,
-  onDelete,
-  onCancelRequest,
+  onSelectEvent,
+  focusTo,
+  selectedEventId,
 }) => {
-  const [selectedEventId, setSelectedEventId] = useState(null);
-  const selectedEvent = useMemo(
-    () =>
-      selectedEventId
-        ? locations.find((e) => (e.id || e._id) === selectedEventId)
-        : null,
-    [locations, selectedEventId]
-  );
-  const auth = useContext(AuthContext);
-
   if (!isValidMapCenter(center)) return null;
 
   return (
@@ -77,9 +66,9 @@ const MapView = ({
       fullscreenControl={false}
       className={`map ${className || ''}`}
       style={style}
-      onClick={() => setSelectedEventId(null)}
     >
       <RecenterOnFirstUpdate position={center} fallback={DEFAULT_MAP_CENTER} />
+      <PanToEvent focusTo={focusTo} locations={locations} />
 
       <AdvancedMarker position={center}>
         <Marker isCenter />
@@ -98,52 +87,12 @@ const MapView = ({
             key={key}
             position={event.coordinates}
             title={event.title}
-            onClick={() => setSelectedEventId(event.id || event._id)}
+            onClick={() => onSelectEvent && onSelectEvent(key)}
           >
-            <Marker distance={distance} event={event} />
+            <Marker distance={distance} event={event} selected={key === selectedEventId} />
           </AdvancedMarker>
         );
       })}
-
-      <MapControl position={ControlPosition.RIGHT_BOTTOM}>
-        <div id="add-event-button">
-          <PlusButton />
-        </div>
-      </MapControl>
-
-      {selectedEvent && (
-        <MapControl position={ControlPosition.LEFT_TOP}>
-          <div id="legend">
-            <EventItem
-              id={selectedEvent.id || selectedEvent._id}
-              self={selectedEvent}
-              title={selectedEvent.title}
-              description={selectedEvent.description}
-              address={selectedEvent.address}
-              coordinates={selectedEvent.coordinates}
-              host={selectedEvent.host}
-              numOfParticipants={selectedEvent.numOfParticipants}
-              startTime={new Date(selectedEvent.startTime).toLocaleString(
-                'en-US',
-                {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                }
-              )}
-              isParticipated={hasUser(selectedEvent.participants, auth.userId)}
-              isRequested={hasUser(selectedEvent.pending, auth.userId)}
-              showFull
-              onJoinRequest={onJoinRequest}
-              onCancelParticipation={onCancelParticipation}
-              onDelete={onDelete}
-              onCancelRequest={onCancelRequest}
-            />
-          </div>
-        </MapControl>
-      )}
     </Map>
   );
 };

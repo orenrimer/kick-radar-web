@@ -1,7 +1,8 @@
 ﻿.plus-button {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, #3D55C5 0%, #1D31A3 100%);
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    background: linear-gradient(135deg, #C8E94E 0%, #A8D62E 100%);
     text-decoration: none;
     border-radius: 50%;
     display: flex;
@@ -18,14 +19,14 @@
 }
 
 .plus-sign {
-    color: var(--color-text-primary);
-    font-size: 42px;
+    color: #0B0B0B;
+    font-size: 22px;
     font-weight: bold;
 }
 
 .tooltip {
     position: absolute;
-    bottom: 80px;
+    bottom: 52px;
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 6px 10px;

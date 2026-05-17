@@ -42,9 +42,11 @@
 }
 
 .small {
-    width: 30px;
-    height: 30px;
+    width: 18px;
+    height: 18px;
     background-color: rgba(var(--color-marker-rgb), 1);
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
     animation-delay: 0.6s;
 }
 
@@ -52,24 +54,29 @@
 .distance-badge {
     display: flex;
     align-items: center;
-    background: white;
+    background: #A8D62E;
+    color: #0B0B0B;
     padding: 6px 12px;
     border-radius: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-size: 14px;
     font-weight: 600;
+    transition: box-shadow 0.2s ease;
+}
+
+.distance-badge--selected {
+    box-shadow: 0 0 28px 10px rgba(168, 214, 46, 0.8), 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .icon {
     width: 30px;
     height: 30px;
-    background-color: var(--color-brand);
-    border-radius: 50%;
+    background-color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: var(--color-bg-light);
+    color: #0B0B0B;
     font-size: 24px;
     margin-right: 8px;
 }

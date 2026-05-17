@@ -1,11 +1,12 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import AuthContext from '../../shared/components/contexts/AuthContext';
 import NearbyEvents from '../components/NearbyEvents';
 import Sidebar from '../../shared/components/nevigation/Sidebar';
-import NavLinks from '../../shared/components/nevigation/NavLinks';
+import Header from '../../shared/components/nevigation/Header';
 import AuthField from '../../shared/components/UIComponents/AuthField/AuthField';
+import PlusButton from '../../shared/components/UIComponents/PlusButton/PlusButton';
 import { useAllEvents, useUserEvents, eventKeys } from '../../queries/events';
 import { useUserLocation } from '../../shared/components/hooks/useUserLocation';
 import { useDebounce } from '../../shared/components/hooks/useDebounce';
@@ -28,8 +29,18 @@ const Home = () => {
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [filter, setFilter] = useState('');
+  const [scrollSignal, setScrollSignal] = useState({ id: null, n: 0 });
+  const handleSelectEvent = useCallback(
+    (id) => setScrollSignal((s) => ({ id, n: s.n + 1 })),
+    []
+  );
+  const [focusSignal, setFocusSignal] = useState({ id: null, n: 0 });
+  const handleFocusEvent = useCallback((id) => {
+    setFocusSignal((s) => ({ id, n: s.n + 1 }));
+    setScrollSignal((s) => ({ id, n: s.n + 1 }));
+  }, []);
   const debouncedFilter = useDebounce(filter, 300);
-  const { position } = useUserLocation();
+  const { position, distanceTo } = useUserLocation();
 
   const near = useMemo(
     () => ({
@@ -142,39 +153,79 @@ const Home = () => {
 
   return (
     <div className="home-shell">
+      <Header />
       <div className="home-body">
         <aside className="sidebar-panel">
-          <Sidebar onCatgoryChange={setSelectedCategory} />
+          <Sidebar
+            events={renderedEvents}
+            scrollTo={scrollSignal}
+            distanceTo={distanceTo}
+            onFocusEvent={handleFocusEvent}
+            onJoinRequest={handleJoinRequestUpdate}
+            onCancelParticipation={handleCancelParticipation}
+            onDelete={handleEventDelete}
+            onCancelRequest={handleCancelJoinRequest}
+          />
         </aside>
         <div className="map-column">
           <header className="topbar">
-            <div className="topbar__title">
-              <h2>Find games near you</h2>
-              <p>Live matches and upcoming kick-offs around you</p>
+            <div className="topbar__tabs">
+              <button
+                type="button"
+                className={`topbar__tab ${selectedCategory === 'all' ? 'topbar__tab--active' : ''}`}
+                onClick={() => setSelectedCategory('all')}
+              >
+                All Events
+              </button>
+              {auth.isLoggedIn && (
+                <>
+                  <button
+                    type="button"
+                    className={`topbar__tab ${selectedCategory === 'hosted' ? 'topbar__tab--active' : ''}`}
+                    onClick={() => setSelectedCategory('hosted')}
+                  >
+                    My Events
+                  </button>
+                  <button
+                    type="button"
+                    className={`topbar__tab ${selectedCategory === 'participated' ? 'topbar__tab--active' : ''}`}
+                    onClick={() => setSelectedCategory('participated')}
+                  >
+                    Attending Events
+                  </button>
+                  <button
+                    type="button"
+                    className={`topbar__tab ${selectedCategory === 'requested' ? 'topbar__tab--active' : ''}`}
+                    onClick={() => setSelectedCategory('requested')}
+                  >
+                    Pending Events
+                  </button>
+                </>
+              )}
             </div>
-            <div className="topbar__search">
-              <AuthField
-                type="text"
-                name="topbar-search"
-                placeholder="Search for a team or league"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                leftIcon={<i className="fa-solid fa-magnifying-glass" />}
-              />
-            </div>
-            <div className="topbar__actions">
-              <NavLinks />
+            <div className="topbar__right">
+              <div className="topbar__search">
+                <AuthField
+                  type="text"
+                  name="topbar-search"
+                  placeholder="Search for a team or league"
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  leftIcon={<i className="fa-solid fa-magnifying-glass" />}
+                />
+              </div>
+              <PlusButton />
             </div>
           </header>
           <main className="map-frame">
             <NearbyEvents
               events={renderedEvents}
               position={position}
+              distanceTo={distanceTo}
               debouncedFilter={debouncedFilter}
-              onJoinRequest={handleJoinRequestUpdate}
-              onCancelParticipation={handleCancelParticipation}
-              onDelete={handleEventDelete}
-              onCancelRequest={handleCancelJoinRequest}
+              focusTo={focusSignal}
+              selectedEventId={scrollSignal.id}
+              onSelectEvent={handleSelectEvent}
             />
           </main>
         </div>

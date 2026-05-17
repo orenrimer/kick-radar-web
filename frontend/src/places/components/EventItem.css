@@ -14,10 +14,10 @@
     text-align: center;
     line-height: 20px;
     font-size: 14px;
-    background-color: var(--color-brand-hover);
+    background-color: #A8D62E;
     border-radius: 14px;
 
-    color: #FFFF;
+    color: #0B0B0B;
 }
 
 .event-item__action a {
@@ -31,8 +31,8 @@
     font-weight: 600;
     line-height: 20px;
     font-size: 14px;
-    background-color: var(--color-brand-hover);
-    color: #FFFF;
+    background-color: #A8D62E;
+    color: #0B0B0B;
     border-radius: 14px;
     display: block;
 }
@@ -40,8 +40,8 @@
 
 .event-item__action button:hover,
 .event-item__action a:hover {
-    background-color: var(--color-brand-hover);
-    color: white;
+    background-color: #A8D62E;
+    color: #0B0B0B;
 }
 
 
@@ -53,15 +53,14 @@
 
 
 .event-card {
-    /* background: #f7f3fe; */
-    background: white;
+    background: rgba(31, 31, 31, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--color-divider);
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
-    min-width: 25rem;
-    width: 25rem;
-    max-width: 25rem;
+    width: 100%;
 }
 
 .event-header {
@@ -74,7 +73,7 @@
 .event-header h3 {
     font-size: 16px;
     font-weight: bold;
-    color: #333;
+    color: #FEFEFE;
     margin: 0;
 }
 
@@ -88,7 +87,7 @@
 
 .event-details {
     font-size: 12px;
-    color: #666;
+    color: var(--color-text-muted);
     margin-bottom: 12px;
 }
 
@@ -113,8 +112,8 @@
 
 .event-item__action button,
 .event-item__action a {
-    background: var(--color-brand);
-    color: white;
+    background: #A8D62E;
+    color: #0B0B0B;
     border: none;
     padding: 8px 12px;
     border-radius: 8px;
